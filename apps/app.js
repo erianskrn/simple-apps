@@ -14,11 +14,11 @@ const connection = require('./middleware/db_connect');
 app.use('/', express.static(path.join(__dirname, 'public')));
 
 app.get('/app1', (req, res) => {
-  res.send('Hello this Apps 1!');
+  res.send('Hello this Apps 1 IDN!');
 });
 
 app.get('/app2', (req, res) => {
-  res.send('Hello this App 2!');
+  res.send('Hello this App 2 IDN!');
 });
 
 app.get('/users', (req, res, next) => {
