@@ -1,0 +1,57 @@
+pipeline {
+    agent {
+    label 'devops1-erian'
+    }
+    
+    tools {
+    nodejs 'nodejs18'
+    }
+
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/erianskrn/simple-apps.git'
+            }
+        }
+        
+        stage('Build Code') {
+            steps {
+                sh '''cd apps
+                npm install'''
+            }
+        }
+        
+        stage('Testing Code') {
+            steps {
+                sh '''cd apps
+                npm test
+                npm run test:coverage'''
+            }
+        }
+        
+        stage('Scaner Code') {
+            steps {
+                sh '''cd apps
+                sonar-scanner \\
+                -Dsonar.projectKey=simple-appseri \\
+                -Dsonar.sources=. \\
+                -Dsonar.host.url=http://172.23.11.18:9000 \\
+                -Dsonar.login=sqp_5611d368a83592ba43f29d97bb99c8dd445109d1'''
+            }
+        }
+        
+        stage('Change file env') {
+            steps {
+                sh '''cd apps
+                sed -i \'s/localhost/db/g\' .env'''
+            }
+        }
+        
+        stage('Deploy Compose') {
+            steps {
+               sh '''docker compose build
+               docker compose up -d'''
+            }
+        }
+    }
+}
